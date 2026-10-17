@@ -1,473 +1,333 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>爱威奶后台管理系统</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token 管理</title>
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(20, 28, 52, 0.78);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #eef2ff;
+      --muted: #98a2c7;
+      --primary: #6d8cff;
+      --primary-2: #9d6dff;
+      --danger: #ff6b81;
+      --ok: #42d392;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      margin: 0;
-      padding: 16px;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at 15% 15%, #1a2140, #0d1117 60%);
-      color: #e6edf3;
-      font: 14px/1.6 system-ui, sans-serif;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(109, 140, 255, 0.25), transparent 35%),
+        radial-gradient(circle at 80% 90%, rgba(157, 109, 255, 0.22), transparent 35%),
+        var(--bg);
     }
+
     .card {
-      width: 100%;
-      max-width: 380px;
-      padding: 20px;
-      border-radius: 16px;
-      background: rgba(22, 27, 38, .85);
-      border: 1px solid rgba(255, 255, 255, .06);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, .5);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      width: min(100%, 560px);
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
     }
+
     h1 {
-      font-size: 18px;
-      margin: 0 0 12px;
-      text-align: center;
-      background: linear-gradient(90deg, #a78bfa, #60a5fa);
+      margin: 0 0 8px;
+      font-size: 26px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      font-weight: 700;
     }
-    .token {
-      color: #94a3b8;
-      word-break: break-all;
-      font-size: 12px;
+
+    .desc {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
     }
-    .label { color: #94a3b8; white-space: nowrap; }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      height: 46px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.22);
+      font-size: 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(109, 140, 255, 0.18);
+    }
+
+    input::placeholder {
+      color: #6f789b;
+    }
+
     button {
-      padding: 10px 14px;
+      height: 46px;
+      padding: 0 16px;
       border: 0;
-      border-radius: 8px;
+      border-radius: 12px;
+      cursor: pointer;
       font-size: 14px;
       font-weight: 600;
-      cursor: pointer;
       color: #fff;
-      background: #323949;
-      transition: filter .15s, transform .05s;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      transition: transform 0.15s, opacity 0.2s;
     }
-    button:hover { filter: brightness(1.12); }
-    button:active { transform: translateY(1px); }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-accent { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
-    .btn-ok { background: linear-gradient(135deg, #34d399, #22d3ee); color: #06281f; }
-    .btn-danger { background: linear-gradient(135deg, #f43f5e, #dc2626); }
-    .btn-block { width: 100%; }
-    .btn-sm { padding: 7px 11px; font-size: 13px; }
-    .check {
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-ghost {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .actions button {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .status {
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      color: #94a3b8;
-      cursor: pointer;
-      user-select: none;
+      gap: 8px;
+      min-height: 24px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
     }
-    .check input { accent-color: #8b5cf6; }
-    .mt { margin-top: 12px; }
-    .row { display: flex; gap: 8px; align-items: center; }
-    input[type=number], input[type=text] {
-      padding: 8px 10px;
-      border: 1px solid rgba(255, 255, 255, .1);
-      border-radius: 8px;
-      background: rgba(0, 0, 0, .3);
-      color: #e6edf3;
-      outline: none;
-      transition: border-color .15s;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #6f789b;
+      flex: none;
     }
-    input[type=number] { width: 72px; }
-    input:focus { border-color: #8b5cf6; }
-    pre {
-      margin-top: 14px;
-      padding: 12px;
+
+    .dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 10px rgba(66, 211, 146, 0.7);
+    }
+
+    .dot.err {
+      background: var(--danger);
+      box-shadow: 0 0 10px rgba(255, 107, 129, 0.6);
+    }
+
+    .link-row {
+      margin-top: 18px;
+    }
+
+    .link-row a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
       border-radius: 12px;
-      background: rgba(0, 0, 0, .4);
-      border: 1px solid rgba(255, 255, 255, .06);
-      font: 12px/1.5 ui-monospace, 'Cascadia Code', Consolas, monospace;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 320px;
-      overflow: auto;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      text-decoration: none;
+      font-size: 14px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .link-row a:hover {
+      border-color: var(--primary);
+      background: rgba(109, 140, 255, 0.14);
+    }
+
+    .note {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
     }
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h1>爱威奶后台管理系统</h1>
-    <div class="row" style="margin-bottom:10px;">
-      <div class="token" id="tokenLine" style="flex:1;margin:0;"></div>
-      <button id="copyBtn" class="btn-sm">复制 token</button>
+  <main class="card">
+    <h1>Token 管理</h1>
+    <p class="desc">仅保留 Token 的本地保存与管理，不包含任务、抽奖或其他功能。</p>
+
+    <label for="tokenInput">Token</label>
+    <div class="input-wrap">
+      <input
+        id="tokenInput"
+        type="password"
+        placeholder="请输入 Token"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button id="toggleBtn" class="btn-ghost" type="button">显示</button>
     </div>
-    <button id="claimBtn" class="btn-accent btn-block">一键领取任务（每日签到/喝水/任务中心）</button>
-    <div class="row mt">
-      <span class="label">抽奖券数量</span>
-      <input id="drawInput" type="number" value="1" min="1" max="500" placeholder="1-500">
-      <button id="drawBtn" class="btn-ok" style="flex:1;">开始抽奖</button>
+
+    <div class="actions">
+      <button id="saveBtn" type="button">保存 Token</button>
+      <button id="copyBtn" class="btn-ghost" type="button">复制</button>
+      <button id="clearBtn" class="btn-ghost danger" type="button">清空</button>
     </div>
-    <div class="row mt" style="align-items:flex-start;">
-      <span class="label" style="padding-top:4px;">抽奖节点</span>
-      <div id="nodeGroup" style="flex:1;display:flex;flex-wrap:wrap;gap:6px 10px;"></div>
+
+    <div class="status" aria-live="polite">
+      <span id="statusDot" class="dot"></span>
+      <span id="statusText">等待操作</span>
     </div>
-    <div class="row" style="margin-top:8px;justify-content:flex-end;">
-      <button id="checkAllBtn" class="btn-sm">全选</button>
-      <button id="checkNoneBtn" class="btn-sm">全不选</button>
+
+    <div class="link-row">
+      <a href="https://delicater.github.io/pwa_av9/index.html" target="_blank" rel="noopener noreferrer">
+        打开 index.html →
+      </a>
     </div>
-    <div class="row mt">
-      <span class="label">自动抽奖间隔</span>
-      <input id="intervalInput" type="number" value="5" min="1" max="3600" placeholder="1-3600">
-      <span class="label">秒</span>
-      <button id="intervalBtn" style="flex:1;">开始自动抽奖</button>
+
+    <div class="note">
+      Token 仅保存在当前浏览器的 localStorage 中，不会上传到任何服务器。
+      在公共设备上使用后请及时清空。
     </div>
-    <div class="row mt">
-      <span class="label">领取抽奖券</span>
-      <button id="ticketBtn" style="flex:1;">领取</button>
-    </div>
-    <button id="vipBtn" class="btn-accent btn-block mt">领取会员30天</button>
-    <div class="row mt">
-      <input id="tokenInput" type="text" style="flex:1;" placeholder="手动输入 token（裸值）">
-      <button id="setTokenBtn">设置</button>
-    </div>
-    <button id="clearTokenBtn" class="btn-danger btn-block mt">清除 token</button>
-    <pre id="logBox"></pre>
-  </div>
+  </main>
+
   <script>
     (() => {
-      'use strict';
+      const STORAGE_KEY = "pwa_av9_admin_token";
 
-      // 集中配置，冻结防止误改
-      const API = Object.freeze({
-        BASE: 'https://apit.fucgq.com/vw3/',
-        dailySign: '202406/mission/sign',
-        drink: 'drink_notify',
-        missionCenter: 'mission_center',
-        draw: 'draw/start',
-        vipClaim: '202406/mission/vip/3',
-      });
+      const tokenInput = document.getElementById("tokenInput");
+      const saveBtn = document.getElementById("saveBtn");
+      const copyBtn = document.getElementById("copyBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const toggleBtn = document.getElementById("toggleBtn");
+      const statusDot = document.getElementById("statusDot");
+      const statusText = document.getElementById("statusText");
 
-      // 抽奖并行提交的节点，支持手动勾选
-      const NODES = Object.freeze([
-        { name: 'apit.fucgq.com',  base: 'https://apit.fucgq.com/vw3/' },
-        { name: 'apit2.fucgq.com', base: 'https://apit2.fucgq.com/vw3/' },
-        { name: 'apiw.fucgq.com',  base: 'https://apiw.fucgq.com/vw3/' },
-        { name: 'apiw.qmpsu.com',  base: 'https://apiw.qmpsu.com/vw3/' },
-        { name: 'apit2.qmpsu.com', base: 'https://apit2.qmpsu.com/vw3/' },
-        { name: 'api.atzxyff.com', base: 'https://api.atzxyff.com/vw3/' },
-        { name: 'api.pk2276.com', base: 'https://api.pk2276.com/vw3/' },
-      ]);
+      function setStatus(text, type = "") {
+        statusText.textContent = text;
+        statusDot.className = "dot" + (type ? " " + type : "");
+      }
 
-      let t = localStorage.getItem('token');
-      const authHeaders = (isJson = false) => {
-        // localStorage 中 token 为裸值，统一补 Bearer 前缀
-        const h = { 'Access-Token': t ? `Bearer ${t}` : '' };
-        if (isJson) h['Content-Type'] = 'application/json';
-        return h;
-      };
-      const request = async (path, method = 'GET', body, base = API.BASE) => {
-        const hasBody = body !== undefined;
-        const opts = { method, headers: authHeaders(hasBody), cache: 'no-store' };
-        if (hasBody) opts.body = JSON.stringify(body);
-        const resp = await fetch(base + path, opts);
-        const txt = await resp.text();
-        let data;
-        try { data = JSON.parse(txt); } catch { data = { raw: txt }; }
-        // 非 2xx 视为失败并抛错，避免把错误响应当成功处理
-        if (!resp.ok) {
-          const err = new Error(`HTTP ${resp.status}${txt ? ' - ' + txt.slice(0, 120) : ''}`);
-          throw err;
-        }
-        return data;
-      };
-      const get = (p, base) => request(p, 'GET', undefined, base);
-      const post = (p, b = {}, base) => request(p, 'POST', b, base);
-
-      const $ = (id) => document.getElementById(id);
-      const tokenLine = $('tokenLine');
-      const copyBtn = $('copyBtn');
-      const claimBtn = $('claimBtn');
-      const drawInput = $('drawInput');
-      const drawBtn = $('drawBtn');
-      const intervalInput = $('intervalInput');
-      const intervalBtn = $('intervalBtn');
-      const ticketBtn = $('ticketBtn');
-      const vipBtn = $('vipBtn');
-      const tokenInput = $('tokenInput');
-      const setTokenBtn = $('setTokenBtn');
-      const clearTokenBtn = $('clearTokenBtn');
-      const logBox = $('logBox');
-
-      // 渲染节点勾选组，默认全部选中
-      const nodeChecks = [];
-      const nodeGroup = $('nodeGroup');
-      NODES.forEach((n) => {
-        const lb = document.createElement('label');
-        lb.className = 'check';
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.checked = true;
-        lb.appendChild(cb);
-        lb.appendChild(document.createTextNode(n.name));
-        nodeGroup.appendChild(lb);
-        nodeChecks.push(cb);
-      });
-      // 返回当前勾选的节点
-      const selectedNodes = () => {
-        const sel = [];
-        nodeChecks.forEach((cb, i) => { if (cb.checked) sel.push(NODES[i]); });
-        return sel;
-      };
-      // 全选 / 全不选
-      $('checkAllBtn').addEventListener('click', () => nodeChecks.forEach((cb) => { cb.checked = true; }));
-      $('checkNoneBtn').addEventListener('click', () => nodeChecks.forEach((cb) => { cb.checked = false; }));
-
-      const showLog = (txt) => {
-        const ts = new Date().toLocaleTimeString('zh-CN', { hour12: false });
-        // 追加而非覆盖，保留历史；超长时截断头部，避免无限增长
-        logBox.textContent += (logBox.textContent ? '\n' : '') + `[${ts}] ${txt}`;
-        if (logBox.textContent.length > 8000) logBox.textContent = logBox.textContent.slice(-8000);
-        logBox.scrollTop = logBox.scrollHeight;
-      };
-      tokenLine.addEventListener('click', () => {
-        if (!t && tokenLine.dataset.login) window.location.href = tokenLine.dataset.login;
-      });
-      const refreshTokenLine = () => {
-        if (t) {
-          tokenLine.dataset.login = '';
-          tokenLine.textContent = `Token: ${t.slice(0, 14)}...${t.slice(-8)}`;
-          tokenLine.style.cursor = '';
-          tokenLine.style.color = '';
+      function loadToken() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          tokenInput.value = saved;
+          setStatus("已从本地加载 Token", "ok");
         } else {
-          tokenLine.dataset.login = 'index.html#/user/login?from=user';
-          tokenLine.textContent = 'Token: 未检测到，点击去登录 →';
-          tokenLine.style.cursor = 'pointer';
-          tokenLine.style.color = '#f88';
+          setStatus("本地暂无 Token", "");
         }
-      };
-      const setBusy = (b) => {
-        claimBtn.disabled = b;
-        drawBtn.disabled = b;
-        ticketBtn.disabled = b;
-        vipBtn.disabled = b;
-        document.body.style.cursor = b ? 'progress' : '';
-      };
-      // 统一包裹异步操作：设置/解除忙碌态，结束时刷新 token 显示
-      const withBusy = async (run) => {
-        setBusy(true);
-        try { await run(); }
-        finally { refreshTokenLine(); setBusy(false); }
-      };
+      }
 
-      // 自动抽奖调度（setTimeout 链，避免固定间隔叠加漂移）
-      let drawTimer = null;
-      let autoOn = false;   // 是否处于自动抽奖模式
-      let autoSec = 5;      // 当前自动间隔（秒）
-      let drawing = false;  // 防止上一次抽奖未完成时重复触发
-      const stopDrawTimer = (msg) => {
-        autoOn = false;
-        if (drawTimer) {
-          clearTimeout(drawTimer);
-          drawTimer = null;
-        }
-        intervalInput.disabled = false;
-        intervalBtn.textContent = '开始自动抽奖';
-        intervalBtn.classList.remove('btn-danger');
-        if (msg) showLog(msg);
-      };
-      // 自动模式下排下一次抽奖
-      const scheduleNextDraw = () => {
-        if (!autoOn) return;
-        drawTimer = setTimeout(() => {
-          drawTimer = null;
-          sendDraw();
-        }, autoSec * 1000);
-      };
-
-      // 写入/清除 token 到 localStorage，并同步内存变量与界面
-      const persistToken = (v) => {
-        if (v) localStorage.setItem('token', v);
-        else localStorage.removeItem('token');
-        t = v || null;
-        refreshTokenLine();
-      };
-
-      // 顺序执行任务，单项失败不中断；每完成一项即时输出到日志
-      const runJobs = async (jobs, lines) => {
-        for (const [name, fn] of jobs) {
-          let line;
-          try { line = `${name}: ${JSON.stringify(await fn())}`; }
-          catch (e) { line = `${name} 失败: ${e.message}`; }
-          lines.push(line);
-          showLog(line);
-        }
-      };
-
-      // 从任务中心收集 value 为数组且 is_get === false 的待领取项
-      const collectClaims = async () => {
-        const mc = await get(API.missionCenter);
-        const jobs = [];
-        for (const [key, val] of Object.entries(mc ?? {})) {
-          if (!Array.isArray(val)) continue;
-          for (const item of val) {
-            if (item?.is_get === false) {
-              jobs.push([`${key}/${item.task_code}`, () => get(`202406/mission/${key}/${item.task_code}`)]);
-            }
-          }
-        }
-        return jobs;
-      };
-
-      const claimAll = () => withBusy(async () => {
-        const lines = [];
-        showLog('执行中...');
-        await runJobs([
-          ['每日签到', () => get(API.dailySign)],
-          ['喝水任务', () => post(API.drink)],
-        ], lines);
-
-        try {
-          const jobs = await collectClaims();
-          if (jobs.length) await runJobs(jobs, lines);
-          else showLog('任务中心：无可领取任务');
-        } catch (e) {
-          showLog(`任务中心获取失败: ${e.message}`);
-        }
-      });
-
-      const sendDraw = () => {
-        if (drawing) return;
-        // 节点与 token 检查放在 drawing 置位之前，提前 return 不会留下死锁
-        const sel = selectedNodes();
-        if (!sel.length) { // 未勾选任何节点时自动停止
-          stopDrawTimer();
-          showLog('未选择任何节点，已停止自动抽奖');
+      function saveToken() {
+        const token = tokenInput.value.trim();
+        if (!token) {
+          setStatus("Token 不能为空", "err");
+          tokenInput.focus();
           return;
         }
-        if (!t) { // 无 token 时手动/自动都无法执行
-          stopDrawTimer();
-          showLog('无 token，已停止自动抽奖');
+
+        localStorage.setItem(STORAGE_KEY, token);
+        setStatus("Token 已保存到本地", "ok");
+      }
+
+      async function copyToken() {
+        const token = tokenInput.value.trim();
+        if (!token) {
+          setStatus("没有可复制的 Token", "err");
           return;
         }
-        drawing = true;
-        return withBusy(async () => {
-          let n = parseInt(drawInput.value, 10);
-          if (!Number.isFinite(n) || n < 1) n = 1;
-          else if (n > 500) n = 500;
-          drawInput.value = String(n);
-          try {
-            // 仅向勾选的节点并行发送抽奖请求，隔离单个节点的失败
-            const results = await Promise.allSettled(
-              sel.map((node) => post(API.draw, { draw_count: n }, node.base))
-            );
-            const rows = results.map((r, i) => {
-              const val = r.status === 'fulfilled' ? r.value : `ERROR: ${r.reason && r.reason.message}`;
-              return `${sel[i].name} => ${JSON.stringify(val)}`;
-            });
-            showLog(`抽奖 ${n} 次（并行 ${sel.length} 个节点: ${sel.map((s) => s.name).join(', ')}）:\n${rows.join('\n')}`);
-            // 任一节点失败（网络/401）或返回 success:false（如券不足），停止自动抽奖
-            const failed = results.some((r) =>
-              r.status === 'rejected' ||
-              (r.status === 'fulfilled' && r.value && r.value.success === false)
-            );
-            if (failed) setTimeout(() => stopDrawTimer('检测到抽奖失败，已停止自动抽奖'), 300);
-          } catch (e) {
-            showLog(`抽奖失败: ${e.message}`);
-          } finally {
-            drawing = false;
-            if (autoOn) scheduleNextDraw(); // 自动模式下排下一次
-          }
-        });
-      };
 
-      const claimTicket = () => withBusy(async () => {
-        let n = parseInt(drawInput.value, 10);
-        if (!Number.isFinite(n) || n < 1) n = 1;
-        drawInput.value = String(n);
         try {
-          // 领取 n 张抽奖券
-          showLog(`领取 ${n} 张抽奖券:\n${JSON.stringify(await post(API.draw, { draw_count: -n }))}`);
-        } catch (e) {
-          showLog(`领取抽奖券失败: ${e.message}`);
-        }
-      });
-
-      const claimVip = () => withBusy(async () => {
-        showLog('执行中...');
-        try {
-          showLog(`领取会员30天:\n${JSON.stringify(await get(API.vipClaim))}`);
-        } catch (e) {
-          showLog(`领取会员失败: ${e.message}`);
-        }
-      });
-
-      claimBtn.addEventListener('click', claimAll);
-      drawBtn.addEventListener('click', sendDraw);
-      intervalBtn.addEventListener('click', () => {
-        if (autoOn) { // 正在自动抽奖，点击即停止
-          stopDrawTimer('自动抽奖已停止');
-        } else {
-          let sec = parseInt(intervalInput.value, 10);
-          if (!Number.isFinite(sec) || sec < 1) sec = 1;
-          autoSec = sec;
-          intervalInput.value = String(sec);
-          intervalInput.disabled = true;
-          intervalBtn.textContent = '停止自动抽奖';
-          intervalBtn.classList.add('btn-danger');
-          showLog(`自动抽奖已启动，每 ${sec} 秒执行一次（失败会自动停止）`);
-          autoOn = true;
-          scheduleNextDraw();
-        }
-      });
-      ticketBtn.addEventListener('click', claimTicket);
-      vipBtn.addEventListener('click', claimVip);
-      setTokenBtn.addEventListener('click', () => {
-        const v = tokenInput.value.trim();
-        if (!v) { showLog('请输入 token'); return; }
-        persistToken(v);
-        showLog('Token 已设置');
-        tokenInput.value = '';
-      });
-      clearTokenBtn.addEventListener('click', () => {
-        persistToken(null);
-        showLog('Token 已清除');
-      });
-      copyBtn.addEventListener('click', async () => {
-        if (!t) { showLog('当前无 token 可复制'); return; }
-        const fallbackCopy = () => {
-          const ta = document.createElement('textarea');
-          ta.value = t;
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
-          let ok = false;
-          try { ok = document.execCommand('copy'); } catch { ok = false; }
-          document.body.removeChild(ta);
-          return ok;
-        };
-        try {
-          if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(t);
-          } else {
-            fallbackCopy();
-          }
-          showLog('Token 已复制到剪贴板');
+          await navigator.clipboard.writeText(token);
+          setStatus("Token 已复制到剪贴板", "ok");
         } catch {
-          showLog(fallbackCopy() ? 'Token 已复制到剪贴板' : '复制失败，请手动复制');
+          tokenInput.type = "text";
+          tokenInput.select();
+          const ok = document.execCommand("copy");
+          tokenInput.type = "password";
+          setStatus(ok ? "Token 已复制到剪贴板" : "复制失败，请手动复制", ok ? "ok" : "err");
+        }
+      }
+
+      function clearToken() {
+        localStorage.removeItem(STORAGE_KEY);
+        tokenInput.value = "";
+        tokenInput.type = "password";
+        toggleBtn.textContent = "显示";
+        setStatus("Token 已清空", "ok");
+        tokenInput.focus();
+      }
+
+      function toggleVisible() {
+        const isPassword = tokenInput.type === "password";
+        tokenInput.type = isPassword ? "text" : "password";
+        toggleBtn.textContent = isPassword ? "隐藏" : "显示";
+      }
+
+      saveBtn.addEventListener("click", saveToken);
+      copyBtn.addEventListener("click", copyToken);
+      clearBtn.addEventListener("click", clearToken);
+      toggleBtn.addEventListener("click", toggleVisible);
+
+      tokenInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          saveToken();
         }
       });
-      refreshTokenLine();
+
+      loadToken();
     })();
   </script>
 </body>
-
 </html>
