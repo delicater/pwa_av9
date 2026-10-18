@@ -149,6 +149,7 @@
       margin-top: 18px;
       color: var(--muted);
       font-size: 13px;
+      line-height: 1.5;
     }
 
     .dot {
@@ -205,14 +206,16 @@
 <body>
   <main class="card">
     <h1>Token 管理</h1>
-    <p class="desc">仅保留 Token 的本地保存与管理，不包含任务、抽奖或其他功能。</p>
+    <p class="desc">
+      仅保留 Token 的本地保存与管理。输入框为空时点击“保存 Token”，会自动读取剪贴板内容作为 Token。
+    </p>
 
     <label for="tokenInput">Token</label>
     <div class="input-wrap">
       <input
         id="tokenInput"
         type="password"
-        placeholder="请输入 Token"
+        placeholder="请输入 Token（留空保存时自动读取剪贴板）"
         autocomplete="off"
         spellcheck="false"
       />
@@ -269,16 +272,48 @@
         }
       }
 
-      function saveToken() {
-        const token = tokenInput.value.trim();
+      // 读取剪贴板文本，失败时返回 null
+      async function readClipboard() {
+        if (!navigator.clipboard || typeof navigator.clipboard.readText !== "function") {
+          return null;
+        }
+        try {
+          const text = await navigator.clipboard.readText();
+          return text && text.trim() ? text.trim() : "";
+        } catch {
+          return null;
+        }
+      }
+
+      async function saveToken() {
+        let token = tokenInput.value.trim();
+
+        // 输入框为空时，尝试从剪贴板获取
         if (!token) {
-          setStatus("Token 不能为空", "err");
-          tokenInput.focus();
-          return;
+          setStatus("输入为空，正在读取剪贴板…", "");
+          const clip = await readClipboard();
+
+          if (clip === null) {
+            setStatus("无法读取剪贴板，请手动输入 Token 或允许剪贴板权限", "err");
+            tokenInput.focus();
+            return;
+          }
+
+          if (clip === "") {
+            setStatus("剪贴板为空，请输入 Token", "err");
+            tokenInput.focus();
+            return;
+          }
+
+          token = clip;
+          tokenInput.value = token;
         }
 
         localStorage.setItem(STORAGE_KEY, token);
-        setStatus("Token 已保存到本地", "ok");
+        setStatus(
+          tokenInput.value === token && token ? "Token 已保存到本地" : "Token 已保存到本地",
+          "ok"
+        );
       }
 
       async function copyToken() {
